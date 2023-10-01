@@ -10,7 +10,6 @@ import IconDownload from "@/assets/icons/download.svg";
 import Text from "@/app/atom/Text";
 
 interface CardProps {
-  ref: Ref;
   id: string;
   title: string;
   type: string;
@@ -18,9 +17,9 @@ interface CardProps {
   duration: number;
 }
 
-const ItemList = memo(function memoComponent({ ref, id, title, type, date , duration } : CardProps) {
+const ItemList = ({ id, title, type, date , duration } : CardProps) => {
   return (
-    <div ref={ref} key={id} className="d-flex justify-content-between">
+    <div key={id} className="d-flex justify-content-between">
       <div className="d-flex flex-row">
         <div className="p-2">
           <Image
@@ -93,6 +92,6 @@ const ItemList = memo(function memoComponent({ ref, id, title, type, date , dura
       </div>
     </div>
   )
-});
+};
 
 export default ItemList;

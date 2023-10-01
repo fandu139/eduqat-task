@@ -6,9 +6,12 @@ interface CardProps {
   margin?: string;
 }
 
-const Card = ({ children, padding = 4, margin = '' } : CardProps) => {
+const Card = ({ children, padding = 4, margin = '', ...props } : CardProps) => {
   return (
-    <div className={`border rounded p-${padding} ${margin}`}>
+    <div
+      {...props}
+      className={`border rounded p-${padding} ${margin}`}
+    >
       {children}
     </div>
   )

@@ -4,53 +4,30 @@ import React, { useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ItemList from '@/app/organisme/ItemList'
 
-const DATA_SESSIONS = [
-  {
-    id: "item-1",
-    name: "Session 1",
-    lessonMaterial: [
-      {
-        id: "1",
-        title: "Materi 1",
-        type: "video",
-        date: "2023-09-22T16:48",
-        duration: 30,
-      },
-      {
-        id: "2",
-        title: "Materi 2",
-        type: "location",
-        date: "2023-09-23T12:48",
-        duration: 40,
-      },
-    ],
-  },
-  {
-    id: "item-2",
-    name: "Session 2",
-    lessonMaterial: [
-      {
-        id: "1",
-        title: "Materi 1",
-        type: "video",
-        date: "2023-09-22T16:48",
-        duration: 30,
-      },
-      {
-        id: "2",
-        title: "Materi 2",
-        type: "location",
-        date: "2023-09-23T12:48",
-        duration: 40,
-      },
-    ],
-  },
-];
+interface LessonProps {
+  id: number;
+  dataLesson: {
+    id: string;
+    title: string;
+    type: string;
+    date: string;
+    duration: number;
+  }[],
+  handleMoveLesson: (
+    id: number,
+    data: {
+      id: string;
+      title: string;
+      type: string;
+      date: string;
+      duration: number;
+    }[]
+  ) => void;
+}
 
-export default function Home(this: any) {
-  const [data, setData] = useState(DATA_SESSIONS);
+export default function MateriLesson({ id, dataLesson, handleMoveLesson }: LessonProps) {
   const grid = 8;
-  
+
   const getListStyle = () => ({
     padding: grid,
     overflow: 'auto',
@@ -78,24 +55,24 @@ export default function Home(this: any) {
     }
 
     const itemsManipulate = reorder(
-      data,
+      dataLesson,
       result.source.index,
       result.destination.index
     );
 
-    setData(itemsManipulate)
+    handleMoveLesson(id, itemsManipulate)
   };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable" direction="horizontal">
+      <Droppable droppableId="lesson">
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             style={getListStyle()}
             {...provided.droppableProps}
           >
-            {data.map((item, index) => {
+            {dataLesson.map((item, index) => {
               return (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided) => (
@@ -108,20 +85,19 @@ export default function Home(this: any) {
                       )}
                     >
                       <ItemList
-                        ref={provided.innerRef}
                         key={index}
                         id={item.id}
-                        // title={item.title}
-                        title={item.name}
-                        // type={item.type}
-                        // date={item.date}
-                        // duration={item.duration}
+                        title={item.title}
+                        type={item.type}
+                        date={item.date}
+                        duration={item.duration}
                       />
                     </div>
                   )}
                 </Draggable>
               )
             })}
+              {provided.placeholder}
           </div>
         )}
       </Droppable>
