@@ -7,12 +7,11 @@ import Image from 'next/image'
 import IconMoveDot from "@/assets/icons/move-dot.svg";
 import IconPlus from "@/assets/icons/plus.svg";
 import IconPencil from "@/assets/icons/pencil.svg";
+import IconEye from "@/assets/icons/eye.svg";
 
 import Text from '@/app/atom/Text'
-import Card from '@/app/atom/Card'
 import Header from '@/app/organisme/Header'
-import ItemList from '@/app/organisme/ItemList'
-import MateriComponent from '@/app/template/materi'
+import MateriComponent from '@/app/template/lesson'
 
 const DATA_SESSIONS = [
   {
@@ -63,6 +62,10 @@ export default function Home(this: any) {
     text: '',
     isActive: false,
   });
+  const [editSession, setEditSession] = useState({
+    text: '',
+    indexShowLesson: -1,
+  });
   const [lesson, setLesson] = useState({
     text: {
       id: "",
@@ -72,6 +75,7 @@ export default function Home(this: any) {
       duration: 0,
     },
     isActive: false,
+    indexShowLesson: -1,
   });
 
   const grid = 8;
@@ -154,11 +158,17 @@ export default function Home(this: any) {
         duration: 0,
       },
       isActive: false,
+      indexShowLesson: -1,
     });
   }
 
-  const handleMoveLesson = (id, value) => {
-    console.log('fandu', id, value);
+  const handleMoveLesson = (id: number, value: {
+        id: string;
+        title: string;
+        type: string;
+        date: string;
+        duration: number;
+    }[]) => {
     const _data = [...data];
 
     const dataManipulate = {
@@ -170,13 +180,62 @@ export default function Home(this: any) {
     setData(_data)
   }
 
+  const handleEditSession = (index: number, typeAction?: string) => {
+    if (typeAction === 'submit') {
+      const _data = [...data];
+
+      const dataManipulate = {
+        ...data[editSession.indexShowLesson],
+        name: editSession.text,
+      };
+
+      _data.splice(editSession.indexShowLesson, 1, dataManipulate);
+
+      setData(_data)
+      setEditSession({
+        text: '',
+        indexShowLesson: -1,
+      })
+    } else {
+      setEditSession({
+        text: data[index].name,
+        indexShowLesson: index,
+      })
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <Header title='Event' height='75' />
-      <div className="p-5">
-        <Card padding={4}>
-          <Text>Event Schedule: 24 Oktober 2021, 16:30</Text>
-        </Card>
+      <div className="container-curriculum">
+        <div className="d-flex flex-row mb-3 align-items-center">
+          <div className="p-2">
+            <h3>Belajar dan praktek cinematic videography</h3>
+          </div>
+          <div className="p-2">
+            <Text>Last edited 18 October 2021 | 13:23</Text>
+          </div>
+          <div className="p-2">
+            <button
+              className="btn btn-custom-preview">
+              <Image
+                src={IconEye}
+                alt="Icon Eye"
+                className="dark:invert"
+                width={20}
+                height={20}
+                priority
+              />
+              <Text color='primary'> Preview</Text>
+            </button>
+          </div>
+        </div>
+        <div className="d-flex flex-row mb-3 align-items-center">
+          <div className="p-2">
+            <Text color="primary">Curricullum</Text>
+            <hr className="line-curriculum"/>
+          </div>
+        </div>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="session">
             {(provided) => (
@@ -211,21 +270,58 @@ export default function Home(this: any) {
                                 priority
                               />
                             </div>
-                            <div className="p-2"><Text>{item.name}</Text></div>
-                            <div className="p-2">
-                              <Image
-                                src={IconPencil}
-                                alt="Icon Pencil"
-                                className="dark:invert"
-                                width={40}
-                                height={24}
-                                priority
-                              />
-                            </div>
+                            {editSession.indexShowLesson !== index ? (
+                              <>
+                                <div className="p-2"><Text>{item.name}</Text></div>
+                                <div className="p-2" onClick={() => handleEditSession(index)}>
+                                  <Image
+                                    src={IconPencil}
+                                    alt="Icon Pencil"
+                                    className="dark:invert"
+                                    width={40}
+                                    height={24}
+                                    priority
+                                  />
+                                </div>
+                              </>
+                            ):(
+                              <>
+                                <div className="p-2">
+                                  <input
+                                    type="text"
+                                    name="name"
+                                    className="form-control"
+                                    placeholder="Edit Session"
+                                    value={editSession.text}
+                                    onChange={(e) => setEditSession((prevState) => ({
+                                      ...prevState,
+                                      text: e.target.value
+                                    }))}
+                                  />
+                                </div>
+                                <div className="p-2">
+                                  <div className="col-md-2">
+                                    <button className="btn btn-primary" onClick={() => handleEditSession(index, 'submit')}>
+                                      Submit
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="p-2">
+                                  <div className="col-md-1">
+                                    <button className="btn btn-danger" onClick={() => setEditSession((prevState) => ({
+                                      ...prevState,
+                                      indexShowLesson: -1
+                                    }))}>
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </div>
                           <MateriComponent id={index} dataLesson={item.lessonMaterial} handleMoveLesson={handleMoveLesson} />
                           <div className="d-flex flex-row">
-                            {lesson.isActive ? (<div className="row g-3">
+                            {lesson.isActive && lesson.indexShowLesson === index ? (<div className="row g-3">
                               <div className="col-md-2">
                                 <select
                                   className="form-select"
@@ -234,7 +330,7 @@ export default function Home(this: any) {
                                     ...prevState,
                                     text: {
                                       ...prevState.text,
-                                      type: e.target.value
+                                      type: e.target.value,
                                     },
                                   }))}
                                 >
@@ -275,7 +371,7 @@ export default function Home(this: any) {
                               </div>
                               <div className="col-md-2">
                                 <input
-                                  type="text"
+                                  type="number"
                                   name="name"
                                   className="form-control"
                                   placeholder="Input Duration"
@@ -297,6 +393,7 @@ export default function Home(this: any) {
                                 <button className="btn btn-danger" onClick={() => setLesson((prevState) => ({
                                   ...prevState,
                                   isActive: false,
+                                  indexShowLesson: -1
                                 }))}>
                                   Cancel
                                 </button>
@@ -304,9 +401,10 @@ export default function Home(this: any) {
                             </div>):(
                             <div className="row g-3">
                               <div className="col-md-3">
-                                <button className="btn btn-primary" onClick={() => setLesson((prevState) => ({
+                                <button className="btn btn-custom" onClick={() => setLesson((prevState) => ({
                                   ...prevState,
                                   isActive: true,
+                                  indexShowLesson: index
                                 }))}>
                                   <Image
                                     src={IconPlus}
@@ -363,7 +461,7 @@ export default function Home(this: any) {
           </div>):(<div className="row g-3">
             <div className="col-md-12">
               <button
-                className="btn btn-primary"
+                className="btn btn-custom"
                 onClick={
                   () => setSession((prevState) => ({
                     ...prevState,
@@ -378,12 +476,35 @@ export default function Home(this: any) {
                   height={20}
                   priority
                 />
-                Add Session
+                <Text color='white'> Add Session</Text>
               </button>
             </div>
           </div>)}
         </div>
        </div>
+
+       <style jsx>
+          {`
+            .container-curriculum {
+              padding-top: 100px;
+              padding-left: 50px;
+              padding-right: 50px;
+              padding-bottom:100px;
+            }
+
+            .line-curriculum {
+              border: 2px solid #7800ef;
+            }
+
+            .btn-custom {
+              background: #7800ef;
+            }
+            
+            .btn-custom-preview {
+              border: 1px solid #7800ef;
+            }
+          `}
+        </style>
      </main>
   )
 }

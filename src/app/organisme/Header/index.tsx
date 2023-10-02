@@ -14,8 +14,9 @@ const StyledHeader = styled.nav<NavProps>`
   height: ${({ height }) => height}px;
   display: flex;
   align-items: center;
-  box-shadow: 0px 4px 34px 0px rgba(39, 26, 73, 0.05);
+  box-shadow: 0 0 5px #e0dddd;
   background-color: ${({ theme }) => theme.colors.white};
+  padding-left: 50px;
 `;
 
 interface HeaderProps {
@@ -34,7 +35,7 @@ const Header = ({ title, height }: HeaderProps) => {
         height={24}
         priority
       />
-      <Text size="lg" weight="semibold">
+      <Text size="lg" weight="bold">
         {title}
       </Text>
     </StyledHeader>

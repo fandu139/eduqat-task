@@ -2,12 +2,15 @@ import { ReactNode, Ref, memo } from "react";
 import Image from "next/image";
 
 import IconVideo from "@/assets/icons/video.svg";
+import IconLocation from "@/assets/icons/location.svg";
 import IconMoveDot from "@/assets/icons/move-dot.svg";
 import IcoClock from "@/assets/icons/clock.svg";
 import IconShowList from "@/assets/icons/show-list.svg";
+import IconDelete from "@/assets/icons/trash.svg";
 import IconDownload from "@/assets/icons/download.svg";
 
 import Text from "@/app/atom/Text";
+import convertDate from "@/app/utils/date";
 
 interface CardProps {
   id: string;
@@ -15,9 +18,10 @@ interface CardProps {
   type: string;
   date: string;
   duration: number;
+  handleDeleteLesson: (id) => void;
 }
 
-const ItemList = ({ id, title, type, date , duration } : CardProps) => {
+const ItemList = ({ id, title, type, date , duration, handleDeleteLesson } : CardProps) => {
   return (
     <div key={id} className="d-flex justify-content-between">
       <div className="d-flex flex-row">
@@ -33,7 +37,7 @@ const ItemList = ({ id, title, type, date , duration } : CardProps) => {
         </div>
         <div className="p-2">
           <Image
-            src={IconVideo}
+            src={type === 'video' ? IconVideo : IconLocation}
             alt="Icon Video"
             className="dark:invert"
             width={40}
@@ -56,7 +60,7 @@ const ItemList = ({ id, title, type, date , duration } : CardProps) => {
             priority
           />
         </div>
-        <div className="p-2"><Text>{date}</Text></div>
+        <div className="p-2"><Text>{convertDate(date)}</Text></div>
         <div className="p-2">
           <Image
             src={IcoClock}
@@ -82,6 +86,16 @@ const ItemList = ({ id, title, type, date , duration } : CardProps) => {
         <div className="p-2">
           <Image
             src={IconShowList}
+            alt="Icon Show List"
+            className="dark:invert"
+            width={40}
+            height={24}
+            priority
+          />
+        </div>
+        <div className="p-2" onClick={() => handleDeleteLesson(id)}>
+          <Image
+            src={IconDelete}
             alt="Icon Show List"
             className="dark:invert"
             width={40}
