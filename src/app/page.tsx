@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import Image from 'next/image'
 
 import IconMoveDot from "@/assets/icons/move-dot.svg";
 import IconPlus from "@/assets/icons/plus.svg";
 import IconPencil from "@/assets/icons/pencil.svg";
+import IconDelete from "@/assets/icons/trash.svg";
 import IconEye from "@/assets/icons/eye.svg";
 
 import Text from '@/app/atom/Text'
@@ -204,6 +205,13 @@ export default function Home(this: any) {
     }
   }
 
+  const handleDeleteSession = useCallback((index: number) => {
+    const _data = [...data];
+
+    _data.splice(index, 1);
+    setData(_data)
+  }, [data])
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <Header title='Event' height='75' />
@@ -277,6 +285,16 @@ export default function Home(this: any) {
                                   <Image
                                     src={IconPencil}
                                     alt="Icon Pencil"
+                                    className="dark:invert"
+                                    width={40}
+                                    height={24}
+                                    priority
+                                  />
+                                </div>
+                                <div className="p-2" onClick={() => handleDeleteSession(index)}>
+                                  <Image
+                                    src={IconDelete}
+                                    alt="Icon Delete"
                                     className="dark:invert"
                                     width={40}
                                     height={24}
