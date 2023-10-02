@@ -63,6 +63,11 @@ export default function MateriLesson({ id, dataLesson, handleMoveLesson }: Lesso
     handleMoveLesson(id, itemsManipulate)
   };
 
+  const handleDeleteLesson = (index: number) => {
+    dataLesson.splice(index-1, 1);
+    handleMoveLesson(id, dataLesson)
+  }
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="lesson">
@@ -91,6 +96,7 @@ export default function MateriLesson({ id, dataLesson, handleMoveLesson }: Lesso
                         type={item.type}
                         date={item.date}
                         duration={item.duration}
+                        handleDeleteLesson={handleDeleteLesson}
                       />
                     </div>
                   )}
