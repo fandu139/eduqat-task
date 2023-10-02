@@ -164,12 +164,12 @@ export default function Home(this: any) {
   }
 
   const handleMoveLesson = (id: number, value: {
-        id: string;
-        title: string;
-        type: string;
-        date: string;
-        duration: number;
-    }[]) => {
+    id: string;
+    title: string;
+    type: string;
+    date: string;
+    duration: number;
+  }[]) => {
     const _data = [...data];
 
     const dataManipulate = {
